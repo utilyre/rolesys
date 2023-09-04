@@ -6,21 +6,20 @@ import (
 	"github.com/labstack/echo/v4"
 )
 
+type panel struct{}
+
 func Panel(e *echo.Echo) {
-	panel := e.Group("/api/panel")
+	g := e.Group("/api/panel")
+	p := panel{}
 
-	panel.GET("/public", panelPublic())
-	panel.GET("/private", panelPrivate())
+	g.GET("/public", p.panelPublic)
+	g.GET("/private", p.panelPrivate)
 }
 
-func panelPublic() echo.HandlerFunc {
-	return func(c echo.Context) error {
-		return c.String(http.StatusOK, "OK")
-	}
+func (p panel) panelPublic(c echo.Context) error {
+	return c.String(http.StatusOK, "OK")
 }
 
-func panelPrivate() echo.HandlerFunc {
-	return func(c echo.Context) error {
-		return c.String(http.StatusOK, "OK")
-	}
+func (p panel) panelPrivate(c echo.Context) error {
+	return c.String(http.StatusOK, "OK")
 }

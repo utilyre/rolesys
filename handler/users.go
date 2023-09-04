@@ -17,20 +17,20 @@ type User struct {
 	Password string `json:"password" validate:"required,min=8,max=1024"`
 }
 
-type usersHandler struct {
+type users struct {
 	auth    auth.Auth
 	storage storage.UsersStorage
 }
 
 func Users(e *echo.Echo, a auth.Auth, s storage.UsersStorage) {
 	g := e.Group("/api/users")
-	h := usersHandler{auth: a, storage: s}
+	u := users{auth: a, storage: s}
 
-	g.POST("/signup", h.usersSignUp)
-	g.POST("/signin", h.usersSignIn)
+	g.POST("/signup", u.usersSignUp)
+	g.POST("/signin", u.usersSignIn)
 }
 
-func (h usersHandler) usersSignUp(c echo.Context) error {
+func (u users) usersSignUp(c echo.Context) error {
 	user := new(User)
 	if err := c.Bind(user); err != nil {
 		return err
@@ -49,7 +49,7 @@ func (h usersHandler) usersSignUp(c echo.Context) error {
 		Password: hash,
 		Role:     storage.RoleUser,
 	}
-	if err := h.storage.Create(sUser); err != nil {
+	if err := u.storage.Create(sUser); err != nil {
 		if errors.Is(err, storage.ErrDuplicateKey) {
 			return echo.ErrConflict
 		}
@@ -61,7 +61,7 @@ func (h usersHandler) usersSignUp(c echo.Context) error {
 	return c.JSON(http.StatusCreated, user)
 }
 
-func (h usersHandler) usersSignIn(c echo.Context) error {
+func (u users) usersSignIn(c echo.Context) error {
 	user := new(User)
 	if err := c.Bind(user); err != nil {
 		return err
@@ -70,7 +70,7 @@ func (h usersHandler) usersSignIn(c echo.Context) error {
 		return err
 	}
 
-	sUser, err := h.storage.GetByEmail(user.Email)
+	sUser, err := u.storage.GetByEmail(user.Email)
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
 			return echo.ErrNotFound
@@ -83,7 +83,7 @@ func (h usersHandler) usersSignIn(c echo.Context) error {
 		return echo.ErrNotFound
 	}
 
-	token, err := h.auth.GenerateToken(sUser.Email, sUser.Role)
+	token, err := u.auth.GenerateToken(sUser.Email, sUser.Role)
 	if err != nil {
 		return err
 	}
