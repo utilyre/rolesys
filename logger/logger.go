@@ -1,7 +1,7 @@
 package logger
 
 import (
-	"github.com/utilyre/role/config"
+	"github.com/utilyre/jwtrole/config"
 	"go.uber.org/zap"
 )
 

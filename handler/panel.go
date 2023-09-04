@@ -5,9 +5,9 @@ import (
 
 	"github.com/golang-jwt/jwt/v5"
 	"github.com/labstack/echo/v4"
-	"github.com/utilyre/role/auth"
-	"github.com/utilyre/role/config"
-	"github.com/utilyre/role/storage"
+	"github.com/utilyre/jwtrole/auth"
+	"github.com/utilyre/jwtrole/config"
+	"github.com/utilyre/jwtrole/storage"
 )
 
 type panel struct{}

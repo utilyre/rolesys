@@ -1,4 +1,4 @@
-module github.com/utilyre/role
+module github.com/utilyre/jwtrole
 
 go 1.21.0
 

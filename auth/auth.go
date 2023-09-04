@@ -6,8 +6,8 @@ import (
 	"github.com/golang-jwt/jwt/v5"
 	"github.com/labstack/echo-jwt/v4"
 	"github.com/labstack/echo/v4"
-	"github.com/utilyre/role/config"
-	"github.com/utilyre/role/storage"
+	"github.com/utilyre/jwtrole/config"
+	"github.com/utilyre/jwtrole/storage"
 )
 
 type Claims struct {

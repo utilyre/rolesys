@@ -6,8 +6,8 @@ import (
 	"net/http"
 
 	"github.com/labstack/echo/v4"
-	"github.com/utilyre/role/auth"
-	"github.com/utilyre/role/storage"
+	"github.com/utilyre/jwtrole/auth"
+	"github.com/utilyre/jwtrole/storage"
 	"golang.org/x/crypto/bcrypt"
 )
 
