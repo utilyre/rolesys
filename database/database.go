@@ -15,7 +15,7 @@ func New(lc fx.Lifecycle, c config.Config, l *zap.Logger) *sqlx.DB {
 	db, err := sqlx.Open(
 		"postgres",
 		fmt.Sprintf(
-			"user=%s password=%s host=%s port=%s dbname=%s sslmode=disabled",
+			"user=%s password=%s host=%s port=%s dbname=%s sslmode=disable",
 			c.DBUser, c.DBPass, c.DBHost, c.DBPort, c.DBName,
 		),
 	)

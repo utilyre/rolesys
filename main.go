@@ -1,10 +1,13 @@
 package main
 
 import (
+	"github.com/utilyre/role/auth"
 	"github.com/utilyre/role/config"
+	"github.com/utilyre/role/database"
 	"github.com/utilyre/role/handler"
 	"github.com/utilyre/role/logger"
 	"github.com/utilyre/role/router"
+	"github.com/utilyre/role/storage"
 	"go.uber.org/fx"
 	"go.uber.org/fx/fxevent"
 	"go.uber.org/zap"
@@ -18,10 +21,15 @@ func main() {
 		fx.Provide(
 			config.New,
 			logger.New,
+			database.New,
+			auth.New,
 			router.New,
+
+			storage.NewUsers,
 		),
 		fx.Invoke(
-			handler.SetupHealthCheck,
+			handler.Users,
+			handler.Panel,
 		),
 	).Run()
 }

@@ -6,16 +6,32 @@ import (
 	"fmt"
 	"net/http"
 
+	"github.com/go-playground/validator/v10"
 	"github.com/labstack/echo/v4"
 	"github.com/utilyre/role/config"
 	"go.uber.org/fx"
 	"go.uber.org/zap"
 )
 
+type Validator struct {
+	validate validator.Validate
+}
+
+var _ echo.Validator = (*Validator)(nil)
+
+func (v *Validator) Validate(i any) error {
+	if err := v.validate.Struct(i); err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, err)
+	}
+
+	return nil
+}
+
 func New(lc fx.Lifecycle, c config.Config, l *zap.Logger) *echo.Echo {
 	e := echo.New()
 
 	e.HideBanner = true
+	e.Validator = &Validator{validate: *validator.New()}
 
 	lc.Append(fx.Hook{
 		OnStart: func(ctx context.Context) error {

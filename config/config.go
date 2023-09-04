@@ -4,7 +4,9 @@ import (
 	"errors"
 	"fmt"
 	"os"
+	"time"
 
+	"github.com/golang-jwt/jwt/v5"
 	"github.com/joho/godotenv"
 )
 
@@ -26,6 +28,10 @@ type Config struct {
 
 	BEHost string
 	BEPort string
+
+	JWTExpirationTime time.Duration
+	JWTSigningMethod  jwt.SigningMethod
+	JWTSecret         []byte
 }
 
 func New() (Config, error) {
@@ -55,6 +61,7 @@ func New() (Config, error) {
 		"DB_NAME",
 		"BE_HOST",
 		"BE_PORT",
+		"JWT_SECRET",
 	}); err != nil {
 		return Config{}, nil
 	}
@@ -70,6 +77,10 @@ func New() (Config, error) {
 
 		BEHost: os.Getenv("BE_HOST"),
 		BEPort: os.Getenv("BE_PORT"),
+
+		JWTExpirationTime: 10 * time.Second,
+		JWTSigningMethod:  jwt.SigningMethodHS256,
+		JWTSecret:         []byte(os.Getenv("JWT_SECRET")),
 	}, nil
 }
 
