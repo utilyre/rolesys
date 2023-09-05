@@ -1,63 +1,78 @@
 package auth
 
 import (
+	"database/sql"
+	"errors"
+	"net/http"
 	"time"
 
-	"github.com/golang-jwt/jwt/v5"
-	"github.com/labstack/echo-jwt/v4"
+	"github.com/google/uuid"
 	"github.com/labstack/echo/v4"
 	"github.com/utilyre/jwtrole/config"
+	"github.com/utilyre/jwtrole/internal/cookies"
 	"github.com/utilyre/jwtrole/storage"
 )
 
-type Claims struct {
-	jwt.RegisteredClaims
-
-	Email string       `json:"email"`
-	Role  storage.Role `json:"role"`
-}
+const cookieName = "Session"
 
 type Auth struct {
-	config config.Config
+	config  config.Config
+	storage storage.SessionsStorage
 }
 
-func New(c config.Config) Auth {
-	return Auth{config: c}
+func New(c config.Config, s storage.SessionsStorage) Auth {
+	return Auth{config: c, storage: s}
 }
 
-func (a Auth) GenerateToken(email string, role storage.Role) (string, error) {
-	claims := &Claims{
-		RegisteredClaims: jwt.RegisteredClaims{
-			ExpiresAt: jwt.NewNumericDate(time.Now().Add(a.config.JWTExpirationTime)),
-		},
-		Email: email,
-		Role:  role,
+func (a Auth) WriteToken(w http.ResponseWriter, user_id uint64) error {
+	token := uuid.NewString()
+	expiresAt := time.Now().Add(a.config.AuthExpirationTime)
+
+	if err := a.storage.Create(&storage.Session{
+		UserID:    user_id,
+		Token:     token,
+		ExpiresAt: &expiresAt,
+	}); err != nil {
+		return err
 	}
 
-	token := jwt.NewWithClaims(a.config.JWTSigningMethod, claims)
-	return token.SignedString(a.config.JWTSecret)
+	return cookies.WriteEncrypted(
+		w,
+		&http.Cookie{
+			Name:     cookieName,
+			Value:    token,
+			Expires:  expiresAt,
+			Path:     "/api",
+			HttpOnly: true,
+			Secure:   true,
+		},
+		a.config.AuthSecret,
+	)
 }
 
-func (a Auth) Allow(roles []storage.Role) (echo.MiddlewareFunc, echo.MiddlewareFunc) {
-	jwtware := echojwt.WithConfig(echojwt.Config{
-		SigningKey:    a.config.JWTSecret,
-		NewClaimsFunc: func(c echo.Context) jwt.Claims { return new(Claims) },
-	})
-
-	roleware := func(next echo.HandlerFunc) echo.HandlerFunc {
+func (a Auth) Allow(roles []storage.Role) echo.MiddlewareFunc {
+	return func(next echo.HandlerFunc) echo.HandlerFunc {
 		return func(c echo.Context) error {
-			user := c.Get("user").(*jwt.Token)
-			claims := user.Claims.(*Claims)
-
-			for _, role := range roles {
-				if role == claims.Role {
-					return next(c)
-				}
+			cookie, err := cookies.ReadEncrypted(c.Request(), cookieName, a.config.AuthSecret)
+			if err != nil {
+				return err
 			}
 
-			return echo.ErrForbidden
+			session, err := a.storage.GetJoinedUsersByToken(cookie.Value)
+			if err != nil {
+				if errors.Is(err, sql.ErrNoRows) {
+					return echo.ErrNotFound
+				}
+
+				return err
+			}
+
+			if session.ExpiresAt.Before(time.Now()) {
+				return echo.NewHTTPError(http.StatusUnauthorized, "token expired")
+			}
+
+			c.Set("user", &session.User)
+			return next(c)
 		}
 	}
-
-	return jwtware, roleware
 }

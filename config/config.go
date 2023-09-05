@@ -1,12 +1,12 @@
 package config
 
 import (
+	"encoding/hex"
 	"errors"
 	"fmt"
 	"os"
 	"time"
 
-	"github.com/golang-jwt/jwt/v5"
 	"github.com/joho/godotenv"
 )
 
@@ -29,9 +29,8 @@ type Config struct {
 	BEHost string
 	BEPort string
 
-	JWTExpirationTime time.Duration
-	JWTSigningMethod  jwt.SigningMethod
-	JWTSecret         []byte
+	AuthExpirationTime time.Duration
+	AuthSecret         []byte
 }
 
 func New() (Config, error) {
@@ -61,9 +60,14 @@ func New() (Config, error) {
 		"DB_NAME",
 		"BE_HOST",
 		"BE_PORT",
-		"JWT_SECRET",
+		"AUTH_SECRET",
 	}); err != nil {
-		return Config{}, nil
+		return Config{}, err
+	}
+
+	authSecret, err := hex.DecodeString(os.Getenv("AUTH_SECRET"))
+	if err != nil {
+		return Config{}, err
 	}
 
 	return Config{
@@ -78,9 +82,8 @@ func New() (Config, error) {
 		BEHost: os.Getenv("BE_HOST"),
 		BEPort: os.Getenv("BE_PORT"),
 
-		JWTExpirationTime: 10 * time.Second,
-		JWTSigningMethod:  jwt.SigningMethodHS256,
-		JWTSecret:         []byte(os.Getenv("JWT_SECRET")),
+		AuthExpirationTime: 10 * time.Second,
+		AuthSecret:         authSecret,
 	}, nil
 }
 

@@ -3,7 +3,6 @@ package handler
 import (
 	"net/http"
 
-	"github.com/golang-jwt/jwt/v5"
 	"github.com/labstack/echo/v4"
 	"github.com/utilyre/jwtrole/auth"
 	"github.com/utilyre/jwtrole/config"
@@ -26,8 +25,7 @@ func (p panel) panelPublic(c echo.Context) error {
 }
 
 func (p panel) panelPrivate(c echo.Context) error {
-	user := c.Get("user").(*jwt.Token)
-	claims := user.Claims.(*auth.Claims)
+	user := c.Get("user").(*storage.User)
 
-	return c.String(http.StatusOK, claims.Email)
+	return c.String(http.StatusOK, user.Email)
 }

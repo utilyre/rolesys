@@ -26,6 +26,7 @@ func main() {
 			router.New,
 
 			storage.NewUsers,
+			storage.NewSessions,
 		),
 		fx.Invoke(
 			handler.Users,

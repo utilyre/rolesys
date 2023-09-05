@@ -83,10 +83,9 @@ func (u users) usersSignIn(c echo.Context) error {
 		return echo.ErrNotFound
 	}
 
-	token, err := u.auth.GenerateToken(sUser.Email, sUser.Role)
-	if err != nil {
+	if err := u.auth.WriteToken(c.Response(), sUser.ID); err != nil {
 		return err
 	}
 
-	return c.JSON(http.StatusCreated, echo.Map{"token": token})
+	return c.JSON(http.StatusCreated, echo.Map{"message": "Created"})
 }

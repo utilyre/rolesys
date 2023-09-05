@@ -30,6 +30,7 @@ func (v *Validator) Validate(i any) error {
 func New(lc fx.Lifecycle, c config.Config, l *zap.Logger) *echo.Echo {
 	e := echo.New()
 
+	e.Debug = true
 	e.HideBanner = true
 	e.Validator = &Validator{validate: *validator.New()}
 
