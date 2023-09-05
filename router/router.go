@@ -8,7 +8,7 @@ import (
 
 	"github.com/go-playground/validator/v10"
 	"github.com/labstack/echo/v4"
-	"github.com/utilyre/jwtrole/config"
+	"github.com/utilyre/rolesys/config"
 	"go.uber.org/fx"
 	"go.uber.org/zap"
 )

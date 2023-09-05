@@ -8,9 +8,9 @@ import (
 
 	"github.com/google/uuid"
 	"github.com/labstack/echo/v4"
-	"github.com/utilyre/jwtrole/config"
-	"github.com/utilyre/jwtrole/internal/cookies"
-	"github.com/utilyre/jwtrole/storage"
+	"github.com/utilyre/rolesys/config"
+	"github.com/utilyre/rolesys/internal/cookies"
+	"github.com/utilyre/rolesys/storage"
 )
 
 const cookieName = "Session"

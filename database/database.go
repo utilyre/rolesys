@@ -6,7 +6,7 @@ import (
 
 	"github.com/jmoiron/sqlx"
 	_ "github.com/lib/pq"
-	"github.com/utilyre/jwtrole/config"
+	"github.com/utilyre/rolesys/config"
 	"go.uber.org/fx"
 	"go.uber.org/zap"
 )

@@ -1,13 +1,13 @@
 package main
 
 import (
-	"github.com/utilyre/jwtrole/auth"
-	"github.com/utilyre/jwtrole/config"
-	"github.com/utilyre/jwtrole/database"
-	"github.com/utilyre/jwtrole/handler"
-	"github.com/utilyre/jwtrole/logger"
-	"github.com/utilyre/jwtrole/router"
-	"github.com/utilyre/jwtrole/storage"
+	"github.com/utilyre/rolesys/auth"
+	"github.com/utilyre/rolesys/config"
+	"github.com/utilyre/rolesys/database"
+	"github.com/utilyre/rolesys/handler"
+	"github.com/utilyre/rolesys/logger"
+	"github.com/utilyre/rolesys/router"
+	"github.com/utilyre/rolesys/storage"
 	"go.uber.org/fx"
 	"go.uber.org/fx/fxevent"
 	"go.uber.org/zap"

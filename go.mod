@@ -1,4 +1,4 @@
-module github.com/utilyre/jwtrole
+module github.com/utilyre/rolesys
 
 go 1.21.0
 
